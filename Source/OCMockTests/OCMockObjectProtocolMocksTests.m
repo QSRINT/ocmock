@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2013-2014 Erik Doernenburg and contributors
+ *  Copyright (c) 2013-2016 Erik Doernenburg and contributors
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may
  *  not use these files except in compliance with the License. You may obtain
@@ -145,6 +145,11 @@ typedef InterfaceForTypedef* PointerTypedefInterface;
     OCMStub([mock stringValueClassMethod]).andReturn(@"stubbed");
     id result = [mock stringValueClassMethod];
     XCTAssertEqual(@"stubbed", result, @"Should have stubbed the class method.");
+}
+
+- (void)testRefusesToCreateProtocolMockForNilProtocol
+{
+    XCTAssertThrows(OCMProtocolMock(nil));
 }
 
 @end

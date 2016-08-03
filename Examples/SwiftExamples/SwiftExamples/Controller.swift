@@ -8,8 +8,7 @@
 
 import Foundation
 
-@objc
-class Controller {
+class Controller: NSObject {
     var connection: Connection;
     var data: String;
     
@@ -17,8 +16,8 @@ class Controller {
         return Controller()
     }
     
-    init() {
-        self.connection = Connection();
+    override init() {
+        self.connection = ServerConnection();
         self.data = "";
     }
     
