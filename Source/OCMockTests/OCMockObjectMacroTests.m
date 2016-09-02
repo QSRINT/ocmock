@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2014-2015 Erik Doernenburg and contributors
+ *  Copyright (c) 2014-2016 Erik Doernenburg and contributors
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may
  *  not use these files except in compliance with the License. You may obtain
@@ -31,6 +31,21 @@
 - (NSString *)stringValue
 {
     return @"FOO";
+}
+
+@end
+
+
+@interface TestClassWithDecimalReturnMethod : NSObject
+
+- (NSDecimalNumber*)method;
+
+@end
+
+@implementation TestClassWithDecimalReturnMethod
+
+- (NSDecimalNumber*)method {
+    return nil;
 }
 
 @end
@@ -253,6 +268,18 @@
 }
 
 
+- (void)testSetsUpReject
+{
+    id mock = OCMClassMock([TestClassForMacroTesting class]);
+
+    OCMReject([mock stringValue]);
+
+    XCTAssertNoThrow([mock verify], @"Should have accepted invocation rejected method not being invoked");
+    XCTAssertThrows([mock stringValue], @"Should have complained during rejected method being invoked");
+    XCTAssertThrows([mock verify], @"Should have complained about rejected method being invoked");
+}
+
+
 - (void)testShouldNotReportErrorWhenMethodWasInvoked
 {
     id mock = OCMClassMock([NSString class]);
@@ -287,7 +314,7 @@
 
     // have not found a way to report the error; it seems we must throw an
     // exception to get out of the forwarding machinery
-    XCTAssertThrowsSpecificNamed(OCMVerify([mock arrayByAddingObject:nil]),
+    XCTAssertThrowsSpecificNamed(OCMVerify([mock arrayByAddingObject:@"foo"]),
                     NSException,
                     NSInvalidArgumentException,
                     @"should throw NSInvalidArgumentException exception");
@@ -351,5 +378,12 @@
     OCMVerify([mock foo]);
 }
 
+
+- (void)testCanUseMacroToStubMethodWithDecimalReturnValue
+{
+    id mock = OCMClassMock([TestClassWithDecimalReturnMethod class]);
+    OCMStub([mock method]).andReturn([NSDecimalNumber decimalNumberWithDecimal:[@0 decimalValue]]);
+    XCTAssertEqualObjects([mock method], [NSDecimalNumber decimalNumberWithDecimal:[@0 decimalValue]]);
+}
 
 @end
